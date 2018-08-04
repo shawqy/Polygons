@@ -1,0 +1,1584 @@
+#include <iostream>         /*Abdelrahman Shawqy Ali 13311*/
+#include <string>
+#include <cstdlib>
+#include <vector>
+using namespace std;       
+bool IS_IN(string h, string s);
+unsigned int NO_OF_RED(string h);
+float GET_PREMETER(string h);
+bool IS_REC(string h);
+bool IS_TRPI(string h);
+float GET_AREA(string h);
+bool INSIDE_REC(string k, string h);
+bool INSIDE_CIR(string k, string h);
+int main() {
+
+	
+	string Polygons;    // which Token from user
+	getline(cin, Polygons);
+	int noOfPoly = 0;         // to count Number of Polygons
+	int noOfPoints = 0;       // to count Nunber of Points
+	//to count polygons
+	for (int i = 0; i < Polygons.length(); i++)
+	{
+		if (Polygons.at(i) == ';'){
+			noOfPoly++;
+		}
+		//to count points
+		if (Polygons.at(i) == '('){
+			noOfPoints++;
+		}
+
+	}
+	int no_of_polygons = noOfPoly + 1;
+
+
+	
+
+	int n = Polygons.length();
+
+	string points;
+
+	points = Polygons.substr(10);
+
+	int counter1 = points.length();
+
+	string newpnt = points.erase(counter1 - 1);
+
+	//	cout << newpnt << endl;
+	/*----------------------------*/
+
+	// t2ty3 L x 
+	string alter = " ";
+	double x_coor[10000];
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < newpnt.length(); ix++){
+		if (newpnt[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (newpnt[jx] == ','){
+					alter = newpnt.substr(ix + 1, jx - ix);
+					x_coor[no_pntx] = atof(alter.c_str());
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alter = "";
+	}
+
+
+	/*------------------------------------------*/
+	// t2ty3 L y
+
+	string alter1 = " ";
+	double y_coor[10000];
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < newpnt.length(); iy++){
+		if (newpnt[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (newpnt[jy] == ','){
+					alter1 = newpnt.substr(jy + 1, iy - jy);
+					y_coor[no_pnty] = atof(alter1.c_str());
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		alter1 = "";
+	}
+	/*-------------------------------------------------------------*/
+	// array to calculate nunber of point per polygone
+
+	int noOfPntPoly[100];
+	int c01 = 0;
+	int id = 0;
+	for (int h00 = 0; h00 < Polygons.length(); h00++){
+		if (Polygons[h00] == '(')
+			c01++;
+		if (Polygons[h00] == ';' || Polygons[h00] == ']'){
+			noOfPntPoly[id] = c01;
+			id++;
+			c01 = 0;
+		}
+	}
+	/*-------------------------------------------------------------*/
+	// points of each polygon in a String 5ly balak da strings so8nna
+
+	string pntPerPoly[100];
+	string alter01 = "";
+	int c02 = 0;
+	int i01 = 0;
+	int j101;
+	bool flag01;
+	for (i01 = 0; i01 < Polygons.length(); i01++){
+
+		if (Polygons[i01] == '[' || Polygons[i01] == ';') {
+			int j001 = i01;
+			j101 = i01 + 1;
+			flag01 = true;
+			while (flag01) {
+				if (Polygons[j101] == ';' || Polygons[j101] == ']'){
+					alter01 = Polygons.substr(j001 + 1, j101 - j001 - 1);
+
+					pntPerPoly[c02] = alter01;
+					flag01 = false;
+				}
+				j101++;
+			}
+			c02++;
+		}
+		//alter01 = "";
+	}
+	/*--------------------------------------------------------------------------------------------*/
+	//array to calculate number of Redundant Points in each polygon
+	unsigned int No_RED_Pnts[100];
+	int t = 0;
+	for (unsigned int i0010 = 0; i0010 < no_of_polygons; i0010++){
+		t = NO_OF_RED(pntPerPoly[i0010]);
+		No_RED_Pnts[i0010] = t;
+		t = 0;
+	}
+	/*---------------------------------------------------------------------------------------------*/
+	//array to Calculate Number of Points per Each polygon WITHOUT Redundant Points
+	int NoOfNONRED[100];
+	for (unsigned int i0011 = 0; i0011 < no_of_polygons; i0011++){
+		NoOfNONRED[i0011] = noOfPntPoly[i0011] - No_RED_Pnts[i0011];
+	}
+
+
+
+
+	/*--------------------------------------------------------------------------------------------*/
+	
+	
+
+
+	/*-------------------------------------------------------------*/
+	// mn hena ybd2 el operations klam el kobaar y3ny
+
+	string operationName;
+
+	while (true)
+	{
+		//getline(cin, operationName);
+		cin >> operationName;
+		if (operationName == "Total_Number_Points"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				cout << noOfPoints << "\n";
+			}
+		}
+		/*------------------------------------------------------------*/
+		else if (operationName == "Number_Polygons"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else{
+				cout << no_of_polygons << endl;
+			}
+		}
+		/*-----------------------------------------------------------*/
+		else if (operationName == "Minimum_X"){
+
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				double minx = x_coor[0];
+				for (unsigned int counter2 = 1; counter2 <noOfPoints; counter2++){
+					if (x_coor[counter2]<minx){
+						minx = x_coor[counter2];
+					}
+				}
+				cout << minx << endl;
+			}
+
+		}
+		/*--------------------------------------------------------------*/
+
+		else if (operationName == "Maximum_X"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				double maxx = x_coor[0];
+				for (unsigned int counter1 = 1; counter1 < noOfPoints; counter1++){
+					if (x_coor[counter1]>maxx){
+						maxx = x_coor[counter1];
+					}
+				}
+
+				cout << maxx << endl;
+			}
+		}
+		/*-------------------------------------------------------------*/
+		else if (operationName == "Minimum_Y"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				double miny = y_coor[0];
+				for (unsigned int counter4 = 1; counter4 < noOfPoints; counter4++){
+					if (y_coor[counter4] < miny){
+						miny = y_coor[counter4];
+					}
+				}
+				cout << miny << endl;
+			}
+		}
+		/*-------------------------------------------------------------------*/
+		else if (operationName == "Maximum_Y"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				double maxy = y_coor[0];
+				for (unsigned int counter3 = 1; counter3 < noOfPoints; counter3++){
+					if (y_coor[counter3]>maxy){
+						maxy = y_coor[counter3];
+					}
+				}
+				cout << maxy << endl;
+
+			}
+		}
+		/*--------------------------------------------------------------*/
+		else if (operationName == "Enclosing_Rectangle"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+
+				double minx = x_coor[0];
+				for (unsigned int counter2 = 1; counter2 <noOfPoints; counter2++){
+					if (x_coor[counter2]<minx){
+						minx = x_coor[counter2];
+					}
+				}
+				//cout << minx << endl;
+
+				double maxx = x_coor[0];
+				for (unsigned int counter1 = 1; counter1 < noOfPoints; counter1++){
+					if (x_coor[counter1]>maxx){
+						maxx = x_coor[counter1];
+					}
+				}
+
+	
+
+				double maxy = y_coor[0];
+				for (unsigned int counter3 = 1; counter3 < noOfPoints; counter3++){
+					if (y_coor[counter3]>maxy){
+						maxy = y_coor[counter3];
+					}
+				}
+				
+
+				double miny = y_coor[0];
+				for (unsigned int counter4 = 1; counter4 < noOfPoints; counter4++){
+					if (y_coor[counter4] < miny){
+						miny = y_coor[counter4];
+					}
+				}
+				
+				cout << "(" << minx << "," << miny << ")" << "," << "(" << minx << "," << maxy << ")" << "," << "(" << maxx << "," << maxy << ")" << "," << "(" << maxx << "," << miny << ")" << endl;
+			}
+		}
+		/*---------------------------------------------------------------------------*/
+		else if (operationName == "Total_Redundant_Points"){
+			if (noOfPoints == 0){
+				cout << "none" << endl;
+			}
+			else {
+				unsigned int  no_of_rdpnts = 0; unsigned star = 0; unsigned int sum = 0;
+				for (unsigned int i004 = 0; i004 < no_of_polygons; i004++){
+					star = NO_OF_RED(pntPerPoly[i004]);
+					sum = sum + star;
+
+				}
+				no_of_rdpnts = sum;
+				cout << no_of_rdpnts << endl;
+
+
+
+			}
+
+		}
+
+		/*-------------------------------------------------------------------------------*/
+		else if (operationName == "Polygon_Points"){
+			int in;
+			cin >> in;
+			if (in>no_of_polygons){
+				cout << "none" << endl;;
+			}
+			else{
+				cout << pntPerPoly[in - 1] << endl;
+			}
+
+
+
+		}
+		/*-------------------------------------------------------------------------------*/
+		else if (operationName == "Point_Polygons"){
+			string pont;
+			cin >> pont;
+			//getline(cin, pont);
+			int arr[100];
+			bool xhunt;
+			int temp006 = 0;
+			int icount = 0;
+			bool anahena = false;
+			for (unsigned int ga = 0; ga < no_of_polygons; ga++){
+				xhunt = IS_IN(pont, pntPerPoly[ga]);
+				if (xhunt == true){
+					temp006 = ga;
+					arr[icount] = temp006;
+					icount++;
+					anahena = true;
+				}
+
+			}
+			if (anahena == false){
+				cout << "none" << endl;
+
+			}
+			for (unsigned int fa = 0; fa < icount; fa++){
+				if (icount == 1){
+					cout << arr[fa] + 1 << endl;
+					break;
+				}
+
+				if (fa < icount - 1) cout << arr[fa] + 1 << ',';
+				if (fa == icount - 1) cout << arr[fa] + 1 << endl;
+
+			}
+
+
+
+		}
+		/*------------------------------------------------------------------------------*/
+		else if (operationName == "List_Polygons_Points") {
+			string op01;
+			cin >> op01;
+			if (op01 == "More"){
+				int inp;
+				cin >> inp;
+				int moren[100];
+				int tempmore = 0;
+				int imore = 0;
+				bool flag1000 = false;
+				for (unsigned int ma = 0; ma < no_of_polygons; ma++){
+					if (NoOfNONRED[ma] > inp){
+						tempmore = ma;
+						moren[imore] = tempmore;
+						imore++;
+						tempmore = 0;
+						flag1000 = true;
+					}
+				}
+				if (flag1000 == false)
+				{
+					cout << "none" << endl;
+				}
+				if (flag1000 == true){
+					for (unsigned int maa = 0; maa < imore; maa++){
+						if (imore == 1){
+							cout << moren[maa] + 1 << endl;
+							break;
+						}
+						if (maa < imore - 1){ cout << moren[maa] + 1 << ","; }
+						if (maa == imore - 1){ cout << moren[maa] + 1 << endl; }
+
+
+					}
+				                                                 }
+			}
+			/*-------------------------------------------------------------*/
+			else if (op01 == "Less"){
+				int lessn[100];
+				int inpl;
+				cin >> inpl;
+				int templess = 0;
+				int iless = 0;
+				bool flag1001 = false;
+				for (unsigned int les = 0; les < no_of_polygons; les++){
+					if (NoOfNONRED[les] < inpl){
+						templess = les;
+						lessn[iless] = templess;
+						iless++;
+						templess = 0;
+						flag1001 = true;
+					}
+				}
+				if (flag1001 == false)
+				{
+					cout << "none" << endl;
+				}
+				if (flag1001 == true){
+					for (unsigned int less = 0; less < iless; less++){
+						if (iless == 1){
+							cout << lessn[less] + 1 << endl;
+							break;
+						}
+
+						if (less < iless - 1){ cout << lessn[less] + 1 << ","; }
+
+						if (less == iless - 1){ cout << lessn[less] + 1 << endl; }
+					}
+
+				}
+			                        }
+			else if (op01 == "Equal"){
+				int equaln[100];
+				int inpq;
+				cin >> inpq;
+				int tempql = 0;
+				int iql = 0;
+				bool flag1002 = false;
+				for (unsigned int ql = 0; ql < no_of_polygons; ql++){
+					if (NoOfNONRED[ql] == inpq){
+						tempql = ql;
+						equaln[iql] = tempql;
+						iql++;
+						tempql = 0;
+						flag1002 = true;
+					}
+				}
+				if (flag1002 == false)
+				{
+					cout << "none" << endl;
+				}
+				for (unsigned int q = 0; q < iql; q++){
+					if (iql == 1){
+						cout << equaln[q] + 1 << endl;
+						break;
+					}
+
+					if (q < iql - 1){ cout << equaln[q] + 1 << ","; }
+
+					if (q == iql - 1){ cout << equaln[q] + 1 << endl; }
+				}
+
+			                         }
+		}
+		/*-------------------------------------------------------------------------------*/
+		
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "List_Triangles"){
+			int noOfTri[100];
+			int temptri = 0;
+			int itri = 0;
+			bool flag1003 = false;
+			for (unsigned int tri = 0; tri < no_of_polygons; tri++){
+				if (NoOfNONRED[tri] == 3){
+					temptri = tri;
+					noOfTri[itri] = temptri;
+					itri++;
+					flag1003 = true;
+					temptri = 0;
+				}
+
+			}
+			if (flag1003 == false)
+			{
+				cout << "none" << endl;
+			}
+			if (flag1003 == true){
+				for (unsigned int tt = 0; tt < itri; tt++){
+					if (itri == 1) {
+						cout << noOfTri[tt] + 1 << endl;
+						break;
+					}
+					if (tt < itri - 1){
+						cout << noOfTri[tt] + 1 << ",";
+					}
+					if (tt == itri - 1){
+						cout << noOfTri[tt] + 1 << endl;
+					}
+				}
+			}
+
+		}
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "Polygon_Perimeter"){
+			int nth;
+			cin >> nth;
+			if (nth > no_of_polygons) {
+				cout << "none" << endl;
+				break;
+			}
+			float prem = GET_PREMETER(pntPerPoly[nth - 1]);
+			cout << prem << endl;
+		}
+		/*-------------------------------------------------------------------------------*/
+		else if (operationName == "List_Rectangles"){
+			int noOfRect[100];
+			int temprect = 0;
+			int irect = 0;
+			bool flag1004 = false;
+			bool recthunt;
+			for (unsigned int rect = 0; rect < no_of_polygons; rect++){
+				recthunt = IS_REC(pntPerPoly[rect]);
+				if (recthunt == true){
+					temprect = rect;
+					noOfRect[irect] = temprect;
+					irect++;
+					flag1004 = true;
+					temprect = 0;
+				}
+
+			}
+			if (flag1004 == false){ cout << "none" << endl; }
+			if (flag1004 == true){
+				for (unsigned r = 0; r < irect; r++){
+					if (irect == 1){ cout << noOfRect[r] + 1 << endl; break; }
+					if (r < irect - 1){ cout << noOfRect[r] + 1 << ","; }
+					if (r == irect - 1){ cout << noOfRect[r] + 1 << endl; }
+				}
+			}
+
+
+
+
+		}
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "List_Trapezoid"){
+			int noOfTrbi[100];
+			int temptrbi = 0;
+			int itrbi = 0;
+			bool flag1005 = false;
+			bool trbihunt;
+			for (unsigned int trbi = 0; trbi < no_of_polygons; trbi++){
+				trbihunt = IS_TRPI(pntPerPoly[trbi]);
+				if (trbihunt == true){
+					temptrbi = trbi;
+					noOfTrbi[itrbi] = temptrbi;
+					itrbi++;
+					flag1005 = true;
+					temptrbi = 0;
+				}
+
+			}
+			if (flag1005 == false){ cout << "none" << endl; }
+
+			if (flag1005 == true){
+				for (unsigned tr = 0; tr < itrbi; tr++){
+					if (itrbi == 1){ cout << noOfTrbi[tr] + 1 << endl; break; }
+					if (tr < itrbi - 1){ cout << noOfTrbi[tr] + 1 << ","; }
+					if (tr == itrbi - 1){ cout << noOfTrbi[tr] + 1 << endl; }
+				}
+			}
+
+
+
+
+		}
+		/*-------------------------------------------------------------------------------*/
+		else if (operationName == "Polygon_Area"){
+			int takePoly;
+			float area;
+			cin >> takePoly;
+			if (takePoly > no_of_polygons){ cout << "none" << endl; }
+			else {
+				area = GET_AREA(pntPerPoly[takePoly - 1]);
+				cout << area << endl;
+			}
+		}
+		/*-------------------------------------------------------------------------------*/
+		else if (operationName == "Polygons_Area_Range"){
+			string minmax;
+			//getline(cin, minmax);
+			cin >> minmax;
+			int l = minmax.find(',');
+			string min = minmax.substr(0, l);
+			float minArea = atof(min.c_str());
+			string max = minmax.substr(l + 1);
+			float maxArea = atof(max.c_str());
+			int RangArea[100];
+			int temparea = 0;
+			int iarea = 0;
+			float areapol;
+			bool flag1007 = false;
+
+			for (unsigned int ara = 0; ara < no_of_polygons; ara++){
+				areapol = GET_AREA(pntPerPoly[ara]);
+				if ((areapol >minArea) && (areapol<maxArea)){
+					temparea = ara;
+					RangArea[iarea] = temparea;
+					iarea++;
+					flag1007 = true;
+					temparea = 0;
+				}
+			}
+			if (flag1007 == false){ cout << "none" << endl; }
+			if (flag1007 == true){
+				for (unsigned int arra = 0; arra < iarea; arra++){
+					if (iarea == 1){ cout << RangArea[arra] + 1 << endl; break; }
+					if (arra<iarea - 1){ cout << RangArea[arra] + 1 << ","; }
+					if (arra == iarea - 1){ cout << RangArea[arra] + 1 << endl; }
+
+				}
+			}
+
+
+
+		}
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "Inside_Rectangle"){
+			string rectangle;
+			cin >> rectangle;
+			//getline(cin, rectangle);
+			int ID_REC[100];
+			int tempidr = 0;
+			int iidr = 0;
+			bool flag_idr = false;
+			bool inrhunt;
+			for (unsigned int i101 = 0; i101 < no_of_polygons; i101++){
+				inrhunt = INSIDE_REC(rectangle, pntPerPoly[i101]);
+				if (inrhunt == true){
+					tempidr = i101;
+					ID_REC[iidr] = tempidr;
+					iidr++;
+					flag_idr = true;
+					tempidr = 0;
+				}
+
+			}
+			if (inrhunt == false){ cout << "none" << endl; }
+			if (inrhunt == true){
+				for (unsigned int i102 = 0; i102 < iidr; i102++){
+					if (iidr == 1){ cout << ID_REC[i102] + 1 << endl; }
+					if (i102<iidr - 1){ cout << ID_REC[i102] + 1 << ","; }
+					if (i102 == iidr - 1){ cout << ID_REC[i102] + 1 << endl; }
+				}
+			}
+
+		}
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "Inside_Circle"){
+			string circle;
+			cin >> circle;
+			//getline(cin, circle);
+			int ID_CIR[100];
+			int tempidc = 0;
+			int iidc = 0;
+			bool flag_idc = false;
+			bool inchunt;
+			for (unsigned int i104 = 0; i104 < no_of_polygons; i104++){
+				inchunt = INSIDE_CIR(circle, pntPerPoly[i104]);
+				if (inchunt == true){
+					tempidc = i104;
+					ID_CIR[iidc] = tempidc;
+					iidc++;
+					flag_idc = true;
+					tempidc = 0;
+				}
+
+			}
+			if (flag_idc == false){ cout << "none" << endl; }
+			if (flag_idc == true){
+				for (unsigned int i106 = 0; i106 < iidc; i106++){
+					if (iidc == 1){ cout << ID_CIR[i106] + 1 << endl;  break; }
+					if (i106 < iidc - 1){ cout << ID_CIR[i106] + 1 << ","; }
+					if (i106 == iidc - 1){ cout << ID_CIR[i106] + 1 << endl; }
+				}
+			}
+		}
+		/*--------------------------------------------------------------------------------*/
+
+		/*--------------------------------------------------------------------------------*/
+		else if (operationName == "Quit"){
+
+			break;
+
+
+		}
+
+	}
+
+
+	return 0;
+}          /*Abdelrahman Shawqy Ali 13311*/
+unsigned int NO_OF_RED(string h) {
+	/*Abdelrahman Shawqy Ali 13311*/
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+
+
+
+
+
+	unsigned int nonred = 0;
+
+
+	for (unsigned int c = 0; c < x_coor.size() - 1; c++){
+
+		if ((x_coor[c] == x_coor[c + 1]) && (y_coor[c] == y_coor[c + 1]))
+		{
+			nonred++;
+			x_coor.erase(x_coor.begin() + c + 1);
+			y_coor.erase(y_coor.begin() + c + 1);
+
+		}
+	}
+	for (unsigned int c5 = 1; c5 < x_coor.size(); c5++){
+
+		if ((x_coor[c5 - 1] == x_coor[c5]) && (y_coor[c5 - 1] == y_coor[c5]))
+		{
+			nonred++;
+			x_coor.erase(x_coor.begin() + c5);
+			y_coor.erase(y_coor.begin() + c5);
+
+		}
+	}
+	if ((x_coor[0] == x_coor[x_coor.size() - 1]) && (y_coor[0] == y_coor[x_coor.size() - 1]))
+	{
+		nonred++;
+		x_coor.erase(x_coor.begin() + x_coor.size() - 1);
+		y_coor.erase(y_coor.begin() + x_coor.size() - 1);
+	}
+	for (unsigned int c1 = 0; c1<x_coor.size() - 2; c1++){
+
+		if (((y_coor[c1 + 1] - y_coor[c1]) / (x_coor[c1 + 1] - x_coor[c1])) == ((y_coor[c1 + 2] - y_coor[c1 + 1]) / (x_coor[c1 + 2] - x_coor[c1 + 1])))
+		{
+			nonred++;
+			x_coor.erase(x_coor.begin() + c1 + 1);
+			y_coor.erase(y_coor.begin() + c1 + 1);
+
+		}
+	}
+	for (unsigned int c6 = 2; c6<x_coor.size(); c6++){
+
+		if (((y_coor[c6 - 1] - y_coor[c6]) / (x_coor[c6 - 1] - x_coor[c6])) == ((y_coor[c6 - 2] - y_coor[c6 - 1]) / (x_coor[c6 - 2] - x_coor[c6 - 1])))
+		{
+			nonred++;
+			x_coor.erase(x_coor.begin() + c6 - 1);
+			y_coor.erase(y_coor.begin() + c6 - 1);
+
+		}
+	}
+
+	/*if (((y_coor[0] - y_coor[x_coor.size() - 1]) / (x_coor[0] - x_coor[x_coor.size() - 1])) && ((y_coor[x_coor.size() - 1] - y_coor[x_coor.size() - 2]) / (x_coor[x_coor.size() - 1] - x_coor[x_coor.size() - 2])))
+	{
+	nonred++;
+	x_coor.erase(x_coor.begin() + x_coor.size() - 1);
+	y_coor.erase(y_coor.begin() + x_coor.size() - 1);
+	}
+	*/
+
+	return nonred;
+
+
+}
+bool IS_IN(string h, string s){  /*Abdelrahman Shawqy Ali 13311*/
+	int a = h.find('(');
+	int b = h.find(')');
+	string half1 = h.substr(a + 1, b - 1);
+	string pnts[100];
+	int noOfPnt = 0;
+	for (unsigned int i = 0; i < s.length(); i++){
+		noOfPnt++;
+	}
+	int counter = 0;
+	for (unsigned int j = 0; j < s.length(); j++){
+		if (s[j] == '('){
+			string temp = " ";
+			int k = j;
+			int so;
+			for (unsigned int h = k + 1; s[h] != ')'; h++){ so = h; }
+			temp = s.substr(j + 1, so - j);
+			pnts[counter] = temp;
+			counter++;
+		}
+
+	}
+	for (unsigned int m = 0; m < noOfPnt; m++){
+		if (half1 == pnts[m]){
+			return true;
+			break;
+		}
+	}
+
+}
+float GET_PREMETER(string h){  /*Abdelrahman Shawqy Ali 13311*/
+	string alterx = " ";
+	double x_coor[100];
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor[no_pntx] = atof(alterx.c_str());
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	double y_coor[100];
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor[no_pnty] = atof(altery.c_str());
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+
+	int counter_pnts = 0;
+
+	for (unsigned int i = 0; i<h.length(); i++){
+		if (h[i] == '('){
+			counter_pnts++;
+		}
+	}
+	float sum = 0;
+	float dist = 0;
+	float last = 0;
+	for (unsigned int j = 0; j < counter_pnts - 1; j++){
+		dist = sqrt(pow(x_coor[j] - x_coor[j + 1], 2) + pow(y_coor[j] - y_coor[j + 1], 2));
+		sum = sum + dist;
+		dist = 0;
+	}
+	last = sqrt(pow(x_coor[counter_pnts - 1] - x_coor[0], 2) + pow(y_coor[counter_pnts - 1] - y_coor[0], 2));
+
+	return sum + last;
+
+
+}
+bool IS_TRPI(string h){  /*Abdelrahman Shawqy Ali 13311*/
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+
+	int counter_pnts = 0;
+
+
+	for (unsigned int c = 0; c < x_coor.size() - 1; c++){
+
+		if ((x_coor[c] == x_coor[c + 1]) && (y_coor[c] == y_coor[c + 1]))
+		{
+			x_coor.erase(x_coor.begin() + c + 1);
+			y_coor.erase(y_coor.begin() + c + 1);
+
+		}
+	}
+	for (unsigned int c5 = 1; c5 < x_coor.size(); c5++){
+
+		if ((x_coor[c5 - 1] == x_coor[c5]) && (y_coor[c5 - 1] == y_coor[c5]))
+		{
+			x_coor.erase(x_coor.begin() + c5);
+			y_coor.erase(y_coor.begin() + c5);
+
+		}
+	}
+	if ((x_coor[0] == x_coor[x_coor.size() - 1]) && (y_coor[0] == y_coor[x_coor.size() - 1]))
+	{
+
+		x_coor.erase(x_coor.begin() + x_coor.size() - 1);
+		y_coor.erase(y_coor.begin() + x_coor.size() - 1);
+	}
+	for (unsigned int c1 = 0; c1<x_coor.size() - 2; c1++){
+
+		if (((y_coor[c1 + 1] - y_coor[c1]) / (x_coor[c1 + 1] - x_coor[c1])) == ((y_coor[c1 + 2] - y_coor[c1 + 1]) / (x_coor[c1 + 2] - x_coor[c1 + 1])))
+		{
+			x_coor.erase(x_coor.begin() + c1 + 1);
+			y_coor.erase(y_coor.begin() + c1 + 1);
+
+		}
+	}
+	bool trbi = false;
+	bool flag00 = false;
+	bool flag001 = false;
+	unsigned int checker = x_coor.size();
+	if (checker != 4){
+		trbi = false;
+		return trbi;
+	}
+	else if (checker == 4)
+	{
+		if ((((y_coor[1] - y_coor[2]) / (x_coor[1] - x_coor[2])) == ((y_coor[0] - y_coor[3]) / (x_coor[0] - x_coor[3]))) && (((y_coor[2] - y_coor[3]) / (x_coor[2] - x_coor[3])) != ((y_coor[1] - y_coor[0]) / (x_coor[1] - x_coor[0])))){
+			flag00 = true;
+		}
+		if ((((y_coor[0] - y_coor[1]) / (x_coor[0] - x_coor[1])) == ((y_coor[3] - y_coor[2]) / (x_coor[3] - x_coor[2]))) && (((y_coor[2] - y_coor[1]) / (x_coor[2] - x_coor[1])) != ((y_coor[3] - y_coor[0]) / (x_coor[3] - x_coor[0])))){
+			flag001 = true;
+		}
+		if ((flag00 == true) || (flag001 == true)){
+			trbi = true;
+
+		}
+		return trbi;
+
+	}
+
+}
+bool IS_REC(string h) {  /*Abdelrahman Shawqy Ali 13311*/
+
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+
+	int counter_pnts = 0;
+
+	for (unsigned int i = 0; i<h.length(); i++){
+		if (h[i] == '('){
+			counter_pnts++;
+		}
+	}
+
+
+	for (unsigned int c = 0; c < x_coor.size() - 1; c++){
+
+		if ((x_coor[c] == x_coor[c + 1]) && (y_coor[c] == y_coor[c + 1]))
+		{
+			x_coor.erase(x_coor.begin() + c + 1);
+			y_coor.erase(y_coor.begin() + c + 1);
+
+		}
+	}
+	for (unsigned int c5 = 1; c5 < x_coor.size(); c5++){
+
+		if ((x_coor[c5 - 1] == x_coor[c5]) && (y_coor[c5 - 1] == y_coor[c5]))
+		{
+			x_coor.erase(x_coor.begin() + c5);
+			y_coor.erase(y_coor.begin() + c5);
+
+		}
+	}
+	if ((x_coor[0] == x_coor[x_coor.size() - 1]) && (y_coor[0] == y_coor[x_coor.size() - 1]))
+	{
+
+		x_coor.erase(x_coor.begin() + x_coor.size() - 1);
+		y_coor.erase(y_coor.begin() + x_coor.size() - 1);
+	}
+	for (unsigned int c1 = 0; c1<x_coor.size() - 2; c1++){
+
+		if (((y_coor[c1 + 1] - y_coor[c1]) / (x_coor[c1 + 1] - x_coor[c1])) == ((y_coor[c1 + 2] - y_coor[c1 + 1]) / (x_coor[c1 + 2] - x_coor[c1 + 1])))
+		{
+			x_coor.erase(x_coor.begin() + c1 + 1);
+			y_coor.erase(y_coor.begin() + c1 + 1);
+
+		}
+	}
+
+	unsigned int checker = x_coor.size();
+	bool rec = false;
+	float dyogn;
+	float dist1;
+	float dist2;
+
+	if (checker != 4){
+		rec = false;
+
+	}
+	else if (checker == 4)
+	{
+		dyogn = (pow(x_coor[0] - x_coor[2], 2) + pow(y_coor[0] - y_coor[2], 2));
+		dist1 = (pow(x_coor[0] - x_coor[1], 2) + pow(y_coor[0] - y_coor[1], 2));
+		dist2 = (pow(x_coor[1] - x_coor[2], 2) + pow(y_coor[1] - y_coor[2], 2));
+		if (dyogn == (dist1 + dist2)){
+			rec = true;
+
+		}
+
+	}
+	return rec;
+}
+float GET_AREA(string h){  /*Abdelrahman Shawqy Ali 13311*/
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+
+	int counter_pnts = 0;
+
+	for (unsigned int i = 0; i < h.length(); i++){
+		if (h[i] == '('){
+			counter_pnts++;
+		}
+	}
+
+	unsigned int nonred = 0;
+	if ((x_coor[0] == x_coor[counter_pnts - 1]) && (y_coor[0] == y_coor[counter_pnts - 1]))
+	{
+		x_coor.erase(x_coor.begin() + counter_pnts - 1);
+		y_coor.erase(y_coor.begin() + counter_pnts - 1);
+	}
+
+	for (unsigned int c = 0; c < x_coor.size() - 1; c++){
+
+		if ((x_coor[c] == x_coor[c + 1]) && (y_coor[c] == y_coor[c + 1]))
+		{
+			x_coor.erase(x_coor.begin() + c + 1);
+			y_coor.erase(y_coor.begin() + c + 1);
+
+		}
+	}
+	for (unsigned int c5 = 1; c5 < x_coor.size(); c5++){
+
+		if ((x_coor[c5 - 1] == x_coor[c5]) && (y_coor[c5 - 1] == y_coor[c5]))
+		{
+			x_coor.erase(x_coor.begin() + c5);
+			y_coor.erase(y_coor.begin() + c5);
+
+		}
+	}
+
+	for (unsigned int c1 = 0; c1 < x_coor.size() - 2; c1++){
+
+		if (((y_coor[c1 + 1] - y_coor[c1]) / (x_coor[c1 + 1] - x_coor[c1])) == ((y_coor[c1 + 2] - y_coor[c1 + 1]) / (x_coor[c1 + 2] - x_coor[c1 + 1])))
+		{
+			x_coor.erase(x_coor.begin() + c1 + 1);
+			y_coor.erase(y_coor.begin() + c1 + 1);
+
+		}
+	}
+	for (unsigned int c6 = 2; c6<x_coor.size(); c6++){
+
+		if (((y_coor[c6 - 1] - y_coor[c6]) / (x_coor[c6 - 1] - x_coor[c6])) == ((y_coor[c6 - 2] - y_coor[c6 - 1]) / (x_coor[c6 - 2] - x_coor[c6 - 1])))
+		{
+			x_coor.erase(x_coor.begin() + c6 - 1);
+			y_coor.erase(y_coor.begin() + c6 - 1);
+
+		}
+	}
+	float area;
+	float sumAr = 0;
+	unsigned int i = 0;
+	for (unsigned int i = 0; i < x_coor.size() - 1; i++){
+		area = (((x_coor[i])*(y_coor[i + 1])) - ((x_coor[i + 1])*(y_coor[i])));
+		sumAr = sumAr + area;
+	}
+	area = (((x_coor[i])*(y_coor[i + 1])) - ((x_coor[i + 1])*(y_coor[i])));
+	sumAr = sumAr + area;
+	float Rarea = sumAr / 2.0;
+	return abs(Rarea);
+}
+bool INSIDE_REC(string k, string h){  /*Abdelrahman Shawqy Ali 13311*/
+	// t2ty3 k w max w min bta3h
+	string alterx1 = " ";
+	vector <float> x_coor1;
+	int no_pntx1 = 0;
+	int jx1 = 0;
+	bool flagx1 = true;
+	for (unsigned int ix1 = 0; ix1 < k.length(); ix1++){
+		if (k[ix1] == '('){
+			jx1 = ix1;
+			flagx1 = true;
+			while (flagx1){
+
+				if (k[jx1] == ','){
+					alterx1 = k.substr(ix1 + 1, jx1 - ix1);
+					x_coor1.push_back(atof(alterx1.c_str()));
+					flagx1 = false;
+				}
+				jx1++;
+			}
+			no_pntx1++;
+		}
+		alterx1 = " ";
+	}
+	string altery1 = " ";
+	vector <float> y_coor1;
+	int no_pnty1 = 0;
+	int jy1 = 0;
+	bool flagy1 = true;
+	for (unsigned int iy1 = 0; iy1 < k.length(); iy1++){
+		if (k[iy1] == ')'){
+			jy1 = iy1;
+			flagy1 = true;
+			while (flagy1){
+
+				if (k[jy1] == ','){
+					altery1 = k.substr(jy1 + 1, iy1 - jy1);
+					y_coor1.push_back(atof(altery1.c_str()));
+					flagy1 = false;
+				}
+				jy1--;
+
+			}
+			no_pnty1++;
+		}
+
+
+		altery1 = " ";
+	}
+	int counter_pnts1 = 0;
+
+	for (unsigned int i = 0; i<k.length(); i++){
+		if (h[i] == '('){
+			counter_pnts1++;
+		}
+	}
+
+	float minx1 = x_coor1[0];
+	for (unsigned int counter7 = 1; counter7 < x_coor1.size(); counter7++){
+		if (x_coor1[counter7] < minx1){
+			minx1 = x_coor1[counter7];
+		}
+	}
+	float maxx1 = x_coor1[0];
+	for (unsigned int counter8 = 1; counter8 < x_coor1.size(); counter8++){
+		if (x_coor1[counter8] > maxx1){
+			maxx1 = x_coor1[counter8];
+		}
+	}
+	float maxy1 = y_coor1[0];
+	for (unsigned int counter9 = 1; counter9 < x_coor1.size(); counter9++){
+		if (y_coor1[counter9] > maxy1){
+			maxy1 = y_coor1[counter9];
+		}
+	}
+	float miny1 = y_coor1[0];
+	for (unsigned int counter05 = 1; counter05 < x_coor1.size(); counter05++){
+		if (y_coor1[counter05] < miny1){
+			miny1 = y_coor1[counter05];
+		}
+	}
+
+
+
+	// t2ty3 h w max w min bta3h
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+	int counter_pnts = 0;
+
+	for (unsigned int i = 0; i<h.length(); i++){
+		if (h[i] == '('){
+			counter_pnts++;
+		}
+	}
+	float minx = x_coor[0];
+	for (unsigned int counter2 = 0; counter2 < x_coor.size(); counter2++){
+		if (x_coor[counter2] < minx){
+			minx = x_coor[counter2];
+		}
+	}
+	float maxx = x_coor[0];
+	for (unsigned int counter3 = 0; counter3 < x_coor.size(); counter3++){
+		if (x_coor[counter3] > maxx){
+			maxx = x_coor[counter3];
+		}
+	}
+	float maxy = y_coor[0];
+	for (unsigned int counter4 = 0; counter4 < x_coor.size(); counter4++){
+		if (y_coor[counter4] > maxy){
+			maxy = y_coor[counter4];
+		}
+	}
+	float miny = y_coor[0];
+	for (unsigned int counter5 = 0; counter5 < x_coor.size(); counter5++){
+		if (y_coor[counter5] < miny){
+			miny = y_coor[counter5];
+		}
+	}
+
+	bool checker11 = false;
+	bool checker12 = false;
+	bool checker13 = false;
+	bool checker14 = false;
+	bool isin = false;
+	if (minx>minx1){ checker11 = true; }
+	if (maxx<maxx1){ checker12 = true; }
+	if (maxy<maxy1){ checker13 = true; }
+	if (miny>miny1){ checker14 = true; }
+	if ((checker11 == true) && (checker12 == true) && (checker13 == true) && (checker14 == true))
+	{
+		isin = true;
+	}
+
+	return isin;
+
+}
+bool INSIDE_CIR(string k, string h){  /*Abdelrahman Shawqy Ali 13311*/
+	// t2ty3 k
+	int a = k.find('(');
+	int b = k.find(',');
+	int c = k.find(')');
+	int d = k.rfind(',');
+	string rad = k.substr(d + 1);
+	float r = atof(rad.c_str());
+	string x = k.substr(a + 1, b - 1);
+	float xcen = atof(x.c_str());
+	string y = k.substr(b + 1, c - b - 1);
+	float ycen = atof(y.c_str());
+
+
+
+	// t2ty3 h w max w min bta3h
+	string alterx = " ";
+	vector <float> x_coor;
+	int no_pntx = 0;
+	int jx = 0;
+	bool flag = true;
+	for (unsigned int ix = 0; ix < h.length(); ix++){
+		if (h[ix] == '('){
+			jx = ix;
+			flag = true;
+			while (flag){
+
+				if (h[jx] == ','){
+					alterx = h.substr(ix + 1, jx - ix);
+					x_coor.push_back(atof(alterx.c_str()));
+					flag = false;
+				}
+				jx++;
+			}
+			no_pntx++;
+		}
+		alterx = " ";
+	}
+
+
+	string altery = " ";
+	vector <float> y_coor;
+	int no_pnty = 0;
+	int jy = 0;
+	bool flag1 = true;
+	for (unsigned int iy = 0; iy < h.length(); iy++){
+		if (h[iy] == ')'){
+			jy = iy;
+			flag1 = true;
+			while (flag1){
+
+				if (h[jy] == ','){
+					altery = h.substr(jy + 1, iy - jy);
+					y_coor.push_back(atof(altery.c_str()));
+					flag1 = false;
+				}
+				jy--;
+
+			}
+			no_pnty++;
+		}
+
+
+		altery = " ";
+	}
+	int counter_pnts = 0;
+
+	for (unsigned int i = 0; i<h.length(); i++){
+		if (h[i] == '('){
+			counter_pnts++;
+		}
+	}
+	float minx = x_coor[0];
+	for (unsigned int counter2 = 1; counter2 < counter_pnts; counter2++){
+		if (x_coor[counter2] < minx){
+			minx = x_coor[counter2];
+		}
+	}
+	float maxx = x_coor[0];
+	for (unsigned int counter3 = 1; counter3 < counter_pnts; counter3++){
+		if (x_coor[counter3] > maxx){
+			maxx = x_coor[counter3];
+		}
+	}
+	float maxy = y_coor[0];
+	for (unsigned int counter4 = 1; counter4 < counter_pnts; counter4++){
+		if (y_coor[counter4] > maxy){
+			maxy = y_coor[counter4];
+		}
+	}
+	float miny = y_coor[0];
+	for (unsigned int counter5 = 1; counter5 < counter_pnts; counter5++){
+		if (y_coor[counter5] < miny){
+			miny = y_coor[counter5];
+		}
+	}
+	float dist1 = sqrt(pow(xcen - minx, 2) + pow(ycen - miny, 2));
+	float dist2 = sqrt(pow(xcen - maxx, 2) + pow(ycen - maxy, 2));
+	float dist3 = sqrt(pow(xcen - minx, 2) + pow(ycen - maxy, 2));
+	float dist4 = sqrt(pow(xcen - maxx, 2) + pow(ycen - miny, 2));
+
+	bool checker11 = false;
+	bool checker12 = false;
+	bool checker13 = false;
+	bool checker14 = false;
+	bool isin = false;
+	if (dist1 <= r){ checker11 = true; }
+	if (dist2 <= r){ checker12 = true; }
+	if (dist3 <= r){ checker13 = true; }
+	if (dist4 <= r){ checker14 = true; }
+	if ((checker11 == true) && (checker12 == true) && (checker13 == true) && (checker14 == true))
+	{
+		isin = true;
+	}
+
+	return isin;
+}
